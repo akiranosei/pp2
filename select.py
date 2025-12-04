@@ -1,6 +1,5 @@
 import psycopg2
 from config import load_config
-
 def search_contacts(pattern, limit=None, offset=None):
     sql = "SELECT id, name, phone FROM phonebook WHERE name ILIKE %s OR phone LIKE %s ORDER BY id"
     if limit is not None:
@@ -40,7 +39,7 @@ def show_all(limit=None, offset=None):
 
 def print_contacts(rows):
     if not rows:
-        print("No contacts found.")
+        print("Nothing found.")
         return
     print(f"{'ID':<5} {'Name':<25} {'Phone':<20}")
     print("-" * 50)
@@ -49,34 +48,35 @@ def print_contacts(rows):
     print()
 
 def main():
-    print("\nPhoneBook Menu")
-    print("1 — Show all contacts")
-    print("2 — Search by name or phone pattern")
-    print("3 — Exit")
+    while True:
+        print("\nPhonebook Menu")
+        print("1 — Show all contacts")
+        print("2 — Search by name or phone pattern")
+        print("3 — Exit")
 
-    choice = input("Enter your choice: ").strip()
-    if choice == "1":
-        limit = input("Enter limit (or leave empty for all): ").strip()
-        offset = input("Enter offset (or leave empty for 0): ").strip()
-        limit_val = int(limit) if limit.isdigit() else None
-        offset_val = int(offset) if offset.isdigit() else 0
-        rows = show_all(limit=limit_val, offset=offset_val)
-        print_contacts(rows)
-    elif choice == "2":
-        pattern = input("Enter full or partial name/phone to search: ").strip()
-        if pattern:
-            limit = input("Enter limit (or leave empty for all): ").strip()
-            offset = input("Enter offset (or leave empty for 0): ").strip()
+        choice = input("Enter your choice: ").strip()
+        if choice == "1":
+            limit = input("Enter limit: ").strip()
+            offset = input("Enter offset: ").strip()
             limit_val = int(limit) if limit.isdigit() else None
             offset_val = int(offset) if offset.isdigit() else 0
-            rows = search_contacts(pattern, limit=limit_val, offset=offset_val)
+            rows = show_all(limit=limit_val, offset=offset_val)
             print_contacts(rows)
+        elif choice == "2":
+            pattern = input("Enter name/phone to search: ").strip()
+            if pattern:
+                limit = input("Enter limit: ").strip()
+                offset = input("Enter offset: ").strip()
+                limit_val = int(limit) if limit.isdigit() else None
+                offset_val = int(offset) if offset.isdigit() else 0
+                rows = search_contacts(pattern, limit=limit_val, offset=offset_val)
+                print_contacts(rows)
+            else:
+                continue
+        elif choice == "3":
+            break
         else:
-            print("Pattern cannot be empty.")
-    elif choice == "3":
-        print("Goodbye!")
-    else:
-        print("Invalid choice. Try again.")
+            print("Try again.")
 
 if __name__ == "__main__":
     main()
